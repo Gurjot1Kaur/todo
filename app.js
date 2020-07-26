@@ -2,9 +2,12 @@
 const todoInput = document.querySelector('.todo-input')
 const todoButton = document.querySelector('.todo-button')
 const todoList = document.querySelector('.todo-list')
+const filterOption = document.querySelector('.filter-todo')
 //Event Listeners
+document.addEventListener('DOMContentLoaded', getTodos)
 todoButton.addEventListener('click', addTodo)
 todoList.addEventListener('click', deleteCheck)
+filterOption.addEventListener('change', filterTodo)
 //Functions
 function addTodo(event) {
     //prevent form from submitting
@@ -28,6 +31,10 @@ CREATING THIS
     newTodo.innerText = todoInput.value
     newTodo.classList.add('todo-item')
     todoDiv.appendChild(newTodo) //Li appended to div as a child
+
+    //Add todo to local storage
+    saveLocalTodos(todoInput.value)
+
     //Check Mark Button
 
     const completedButton = document.createElement('button')
@@ -70,6 +77,8 @@ function deleteCheck(e) {
         but element remains there, so we add a eventlistener 
         */
         todo.classList.add('fall')
+        //removing it from local storage
+        removeLocalTodos(todo)
         todo.addEventListener('transitionend', function () {
             todo.remove()
         })
@@ -79,4 +88,83 @@ function deleteCheck(e) {
         const todo = item.parentElement
         todo.classList.toggle('completed')
     }
+}
+function filterTodo(e) {
+    const todos = todoList.childNodes
+    todos.forEach(function (todo) {
+        switch (e.target.value) {
+            case 'all':
+                todo.style.display = 'flex'
+                break //already have them shown
+            case 'completed':
+                if (todo.classList.contains('completed')) {
+                    todo.style.display = 'flex'
+                } else {
+                    todo.style.display = 'none'
+                }
+                break
+            case 'uncompleted':
+                if (!todo.classList.contains('completed')) {
+                    todo.style.display = 'flex'
+                } else {
+                    todo.style.display = 'none'
+                }
+                break
+        }
+    })
+}
+function saveLocalTodos(todo) {
+    //check if you already have a todo in the storage
+    let todos
+    if (localStorage.getItem('todos') === null) todos = []
+    else todos = JSON.parse(localStorage.getItem('todos'))
+    todos.push(todo)
+    localStorage.setItem('todos', JSON.stringify(todos))
+}
+function getTodos() {
+    let todos
+    if (localStorage.getItem('todos') === null) todos = []
+    else todos = JSON.parse(localStorage.getItem('todos'))
+    todos.forEach(function (todo) {
+        //Todo DIV
+        const todoDiv = document.createElement('div')
+        todoDiv.classList.add('todo')
+
+        //Create Li
+        const newTodo = document.createElement('li')
+        newTodo.innerText = todo
+        newTodo.classList.add('todo-item')
+        todoDiv.appendChild(newTodo) //Li appended to div as a child
+        //Check Mark Button
+
+        const completedButton = document.createElement('button')
+        //completedButton.innerText='idhdj ' can be done but what if I wish to add an icon tag to it rather than just simple text then
+        completedButton.innerHTML = '<i class= "fas fa-check"><i>'
+        completedButton.classList.add('complete-btn')
+        todoDiv.appendChild(completedButton)
+
+        //Check Trash Button
+        const trashButton = document.createElement('button')
+        //completedButton.innerText='idhdj ' can be done but what if I wish to add an icon tag to it rather than just simple text then
+        trashButton.innerHTML = '<i class= "fas fa-trash"><i>'
+        trashButton.classList.add('trash-btn')
+        todoDiv.appendChild(trashButton)
+
+        //append this entire div block to {<ul>} list
+        todoList.appendChild(todoDiv)
+    })
+}
+
+//even after refresh the list remains but if you delete then also the list remains so we need to remove
+
+function removeLocalTodos(todo) {
+    let todos
+    if (localStorage.getItem('todos') === null) todos = []
+    else todos = JSON.parse(localStorage.getItem('todos'))
+    const todoIndex = todo.children[0].innerText
+    /*getting the element on which we clicked trash button
+    when we click on button we are clicking on div(todo) and we have to go downto the text
+    */
+    todos.splice(todos.indexOf(todoIndex), 1) // which element is to be removed and how many
+    localStorage.setItem('todos', JSON.stringify(todos))
 }

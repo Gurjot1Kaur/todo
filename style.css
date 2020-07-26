@@ -85,3 +85,39 @@ form button:hover {
     transform: translateY(8rem) rotateZ(20deg);
     opacity: 0;
 }
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    border: none;
+    box-shadow: none;
+}
+.select {
+    margin: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+select {
+    color: #eeae0ad0;
+    width: 10rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    font-family: 'Poppins', sans-serif;
+}
+/* getting the dropdown arrowback */
+.select::after {
+    content: '\25BC';
+    position: absolute; /*bringsthe arrow into the box*/
+    background: white;
+    color: #eeae0ad0;
+    top: 0;
+    right: 0;
+    padding: 0.5rem;
+    pointer-events: none;
+    transform: all 0.3sec ease;
+}
+.select:hover::after {
+    color: white;
+    background: #eeae0ad0;
+}
