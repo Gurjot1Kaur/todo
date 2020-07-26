@@ -12,6 +12,13 @@ filterOption.addEventListener('change', filterTodo)
 function addTodo(event) {
     //prevent form from submitting
     event.preventDefault()
+    if (
+        todoInput.value === null ||
+        todoInput.value === undefined ||
+        todoInput.value === ''
+    ) {
+        return
+    }
     /*
 CREATING THIS
                 <div class="todo" >
@@ -33,7 +40,7 @@ CREATING THIS
     todoDiv.appendChild(newTodo) //Li appended to div as a child
 
     //Add todo to local storage
-    saveLocalTodos(todoInput.value)
+    saveLocalTodos({ name: todoInput.value, isCompleted: false })
 
     //Check Mark Button
 
@@ -87,6 +94,14 @@ function deleteCheck(e) {
     if (item.classList[0] === 'complete-btn') {
         const todo = item.parentElement
         todo.classList.toggle('completed')
+        const todoName = todo.innerText
+        const todos = JSON.parse(localStorage.getItem('todos')) || []
+        todos.forEach((todoItem) => {
+            if (todoItem.name === todoName) {
+                todoItem.isCompleted = !todoItem.isCompleted
+            }
+        })
+        setTodosToLocalStorage(todos)
     }
 }
 function filterTodo(e) {
@@ -113,13 +128,17 @@ function filterTodo(e) {
         }
     })
 }
+
+function setTodosToLocalStorage(todos) {
+    localStorage.setItem('todos', JSON.stringify(todos))
+}
 function saveLocalTodos(todo) {
     //check if you already have a todo in the storage
     let todos
     if (localStorage.getItem('todos') === null) todos = []
     else todos = JSON.parse(localStorage.getItem('todos'))
     todos.push(todo)
-    localStorage.setItem('todos', JSON.stringify(todos))
+    setTodosToLocalStorage(todos)
 }
 function getTodos() {
     let todos
@@ -129,10 +148,13 @@ function getTodos() {
         //Todo DIV
         const todoDiv = document.createElement('div')
         todoDiv.classList.add('todo')
+        if (todo.isCompleted) {
+            todoDiv.classList.add('completed')
+        }
 
         //Create Li
         const newTodo = document.createElement('li')
-        newTodo.innerText = todo
+        newTodo.innerText = todo.name
         newTodo.classList.add('todo-item')
         todoDiv.appendChild(newTodo) //Li appended to div as a child
         //Check Mark Button
@@ -161,10 +183,16 @@ function removeLocalTodos(todo) {
     let todos
     if (localStorage.getItem('todos') === null) todos = []
     else todos = JSON.parse(localStorage.getItem('todos'))
-    const todoIndex = todo.children[0].innerText
     /*getting the element on which we clicked trash button
     when we click on button we are clicking on div(todo) and we have to go downto the text
     */
-    todos.splice(todos.indexOf(todoIndex), 1) // which element is to be removed and how many
-    localStorage.setItem('todos', JSON.stringify(todos))
+    let i = 0
+    todos.forEach((value, index) => {
+        if (value === todo.children[0].innerText) {
+            i = index
+            return
+        }
+    })
+    todos.splice(i, 1) // which element is to be removed and how many
+    setTodosToLocalStorage(todos)
 }
