@@ -3,11 +3,13 @@ const todoInput = document.querySelector('.todo-input')
 const todoButton = document.querySelector('.todo-button')
 const todoList = document.querySelector('.todo-list')
 const filterOption = document.querySelector('.filter-todo')
+
 //Event Listeners
 document.addEventListener('DOMContentLoaded', getTodos)
 todoButton.addEventListener('click', addTodo)
 todoList.addEventListener('click', deleteCheck)
 filterOption.addEventListener('change', filterTodo)
+
 //Functions
 function addTodo(event) {
     //prevent form from submitting
@@ -188,7 +190,7 @@ function removeLocalTodos(todo) {
     */
     let i = 0
     todos.forEach((value, index) => {
-        if (value === todo.children[0].innerText) {
+        if (value.name === todo.children[0].innerText) {
             i = index
             return
         }
